@@ -11,14 +11,16 @@
 [![Code size](https://img.shields.io/github/languages/code-size/gmpassos/js_interop_utils?logo=github&logoColor=white)](https://github.com/gmpassos/js_interop_utils)
 [![License](https://img.shields.io/github/license/gmpassos/js_interop_utils?logo=open-source-initiative&logoColor=green)](https://github.com/gmpassos/js_interop_utils/blob/master/LICENSE)
 
-This library leverages `dart:js_interop` to provide utilities for seamless interaction between Dart and JavaScript objects, enabling deep and flexible transformations.
+This library leverages `dart:js_interop` to provide utilities for seamless interaction between Dart and JavaScript
+objects, enabling deep and flexible transformations.
 It includes extensions for `Object`, `Map`, `Iterable`, `JSObject`, `JSArray`, and more.
 
 ## Features
 
 - **Object Extensions**: Convert Dart objects to JavaScript objects using `.toJSDeep`.
 - **Map Extensions**: Convert Dart `Map` objects to JavaScript objects, supporting deep transformations.
-- **Iterable Extensions**: Handle Dart lists and collections, converting them to JavaScript arrays, including typed arrays.
+- **Iterable Extensions**: Handle Dart lists and collections, converting them to JavaScript arrays, including typed
+  arrays.
 - **JSObject Utilities**: Access JavaScript object keys, properties, and convert them back to Dart maps.
 - **JSArray Utilities**: Work with JavaScript arrays, including pushing elements and converting them to Dart lists.
 
@@ -45,7 +47,7 @@ void main() {
   var jsObject = JSObject();
   jsObject.put('a', 1);
   jsObject.put('b', 2);
-  
+
   print(jsObject.get('a')); // Access property `a`
 }
 ```
@@ -69,8 +71,8 @@ import 'package:js_interop_utils/js_interop_utils.dart';
 void main() {
   var jsArray = JSArray();
   jsArray.push('a');
-  jsArray.pushVarArgs('b',3);
-  
+  jsArray.pushVarArgs('b', 3);
+
   var list = jsArray.toList(); // Convert to Dart `List`
   print(list); // ['a','b',3]
 }
