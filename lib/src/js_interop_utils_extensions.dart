@@ -12,14 +12,28 @@ extension ObjectExtension on Object? {
 
     // TODO: check a better way to identify a `JSAny` instance:
 
+    // Ambiguous platform identification:
+    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
+    if (self is JSArray && self is JSObject) {
+      return null;
+    }
+
     // Ambiguous types:
-    if (self is String) {
+
+    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
+    if (self is String && self is JSString) {
       return null;
-    } else if (self is num) {
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
+    else if (self is num && self is JSNumber) {
       return null;
-    } else if (self is bool) {
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
+    else if (self is bool && self is JSBoolean) {
       return null;
-    } else if (self is List) {
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
+    else if (self is List && self is JSArray) {
       return null;
     }
 
