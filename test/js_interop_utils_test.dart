@@ -7,25 +7,55 @@ import 'package:test/test.dart';
 void main() {
   group('Object', () {
     test('isJSAny', () {
-      expect(null.isJSAny, isFalse);
+      expect(null.isJSAny, isFalse, reason: "null");
+      expect({}.isJSAny, isFalse, reason: "{}");
 
-      expect({}.isJSAny, isFalse);
-      expect(JSObject().isJSAny, isTrue);
-      expect({}.toJSDeep.isJSAny, isTrue);
+      // Ambiguous types (all platforms):
 
-      // Ambiguous types:
-      expect(1.isJSAny, isNull);
-      expect(1.2.isJSAny, isNull);
-      expect("a".isJSAny, isNull);
-      expect(true.isJSAny, isNull);
-      expect([].isJSAny, isNull);
+      expect(JSArray().isJSAny, isNull, reason: "JSArray()");
+      expect([].toJSDeep.isJSAny, isNull, reason: "[].toJSDeep");
+      expect(1.toJS.isJSAny, isNull, reason: "1.toJS");
+      expect(1.2.toJS.isJSAny, isNull, reason: "1.2.toJS");
+      expect("a".toJS.isJSAny, isNull, reason: "a.toJS");
+      expect(true.toJS.isJSAny, isNull, reason: "true.toJS");
 
-      expect(JSArray().isJSAny, isNull);
-      expect([].toJSDeep.isJSAny, isNull);
-      expect(1.toJS.isJSAny, isNull);
-      expect(1.2.toJS.isJSAny, isNull);
-      expect("a".toJS.isJSAny, isNull);
-      expect(true.toJS.isJSAny, isNull);
+      // Ambiguous types (some platforms):
+
+      expect(1.isJSAny, anyOf(isNull, isFalse), reason: "1");
+      expect(1.2.isJSAny, anyOf(isNull, isFalse), reason: "1.2");
+      expect("a".isJSAny, anyOf(isNull, isFalse), reason: "a");
+      expect(true.isJSAny, anyOf(isNull, isFalse), reason: "true");
+      expect([].isJSAny, anyOf(isNull, isFalse), reason: "[]");
+
+      expect(JSObject().isJSAny, anyOf(isNull, isTrue), reason: "JSObject()");
+      expect({}.toJSDeep.isJSAny, anyOf(isNull, isTrue), reason: "{}.toJSDeep");
+    });
+
+    test('objectDartify', () {
+      expect(true.objectDartify(), equals(true));
+      expect(true.toJS.objectDartify(), equals(true));
+
+      expect(1.objectDartify(), equals(1));
+      expect(1.toJS.objectDartify(), equals(1));
+
+      expect(1.2.objectDartify(), equals(1.2));
+      expect(1.2.toJS.objectDartify(), equals(1.2));
+
+      expect("a".objectDartify(), equals("a"));
+      expect("a".toJS.objectDartify(), equals("a"));
+
+      expect([].objectDartify(), equals([]));
+      expect([].toJSDeep.objectDartify(), equals([]));
+
+      expect([1, 2].objectDartify(), equals([1, 2]));
+      expect([1, 2].toJSDeep.objectDartify(), equals([1, 2]));
+
+      expect({}.objectDartify(), equals({}));
+      expect({}.toJSDeep.objectDartify(), equals({}));
+
+      expect({"a": 1, "b": 2}.objectDartify(), equals({"a": 1, "b": 2}));
+      expect(
+          {"a": 1, "b": 2}.toJSDeep.objectDartify(), equals({"a": 1, "b": 2}));
     });
   });
 
@@ -35,9 +65,9 @@ void main() {
         [
           1,
           2,
-        ].toJS,
+        ].toJS.dartify(),
         equals(
-          JSArray()..pushVarArgs(1, 2),
+          (JSArray()..pushVarArgs(1, 2)).dartify(),
         ),
       );
     });
@@ -47,9 +77,9 @@ void main() {
         [
           1.1,
           2.2,
-        ].toJS,
+        ].toJS.dartify(),
         equals(
-          JSArray()..pushVarArgs(1.1, 2.2),
+          (JSArray()..pushVarArgs(1.1, 2.2)).dartify(),
         ),
       );
     });
@@ -59,9 +89,9 @@ void main() {
         [
           1,
           2.2,
-        ].toJS,
+        ].toJS.dartify(),
         equals(
-          JSArray()..pushVarArgs(1, 2.2),
+          (JSArray()..pushVarArgs(1, 2.2)).dartify(),
         ),
       );
     });
@@ -71,9 +101,9 @@ void main() {
         [
           'a',
           'b',
-        ].toJS,
+        ].toJS.dartify(),
         equals(
-          JSArray()..pushVarArgs('a', 'b'),
+          (JSArray()..pushVarArgs('a', 'b')).dartify(),
         ),
       );
     });
@@ -83,9 +113,9 @@ void main() {
         [
           ['a', 1],
           ['b', 2],
-        ].toJSDeep,
+        ].toJSDeep.dartify(),
         equals(
-          JSArray()..pushVarArgs(['a', 1], ['b', 2]),
+          (JSArray()..pushVarArgs(['a', 1], ['b', 2])).dartify(),
         ),
       );
     });
