@@ -1,3 +1,9 @@
+## 1.0.2
+
+- `JSObjectUtil`: fix `jsKeys` mapping name.
+
+- `ObjectExtension`: added `asJSAny`.
+
 ## 1.0.1
 
 - Added extension `Object.isJSAny` and `Object.objectDartify()`;

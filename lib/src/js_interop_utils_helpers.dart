@@ -4,7 +4,7 @@ import 'js_interop_utils_extensions.dart';
 
 @JS('Object')
 extension type JSObjectUtil._(JSObject _jsObject) implements JSAny {
-  @JS('Object.keys')
+  @JS('keys')
   external static JSArray jsKeys(JSObject object);
 
   static Iterable<String> keys(JSObject object) =>
@@ -27,6 +27,8 @@ extension type JSArrayUtil<T extends JSAny?>._(JSArray _jsArray)
     JSAny? any8,
     JSAny? any9,
   ]);
+
+  List toList() => _jsArray.toList();
 }
 
 R? tryCall<R>(R Function() call) {

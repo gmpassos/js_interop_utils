@@ -59,6 +59,34 @@ void main() {
     });
   });
 
+  group('JSObjectUtil', () {
+    test('keys', () {
+      expect(JSObjectUtil.keys(JSObject()), equals([]));
+
+      var o2 = {'a': '1', 'b': 2}.toJSDeep;
+      expect(JSObjectUtil.keys(o2), equals(['a', 'b']));
+    });
+  });
+
+  group('JSArrayUtil', () {
+    test('push, toList', () {
+      expect(
+        JSArrayUtil(JSArray()).toList(),
+        equals([]),
+      );
+
+      expect(
+        (JSArrayUtil(JSArray())
+              ..push(
+                1.toJS,
+                2.toJS,
+              ))
+            .toList(),
+        equals([1, 2]),
+      );
+    });
+  });
+
   group('JSArray', () {
     test('Iterable<int>.toJS', () {
       expect(

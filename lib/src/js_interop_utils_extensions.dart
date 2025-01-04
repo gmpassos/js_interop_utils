@@ -46,6 +46,28 @@ extension ObjectExtension on Object? {
     return self is JSAny;
   }
 
+  /// Casts an [Object] to a [JSAny], in a graceful manner.
+  /// See [isJSAny].
+  JSAny? get asJSAny {
+    final self = this;
+    if (self == null) return null;
+
+    var isJSAny = self.isJSAny;
+    if (isJSAny != null) {
+      if (isJSAny) {
+        return self as JSAny;
+      } else {
+        return null;
+      }
+    } else {
+      try {
+        return self as JSAny;
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
   /// Converts an [Object], which could be a [JSAny], to a Dart type in a graceful manner.
   /// See [isJSAny].
   Object? objectDartify() {
