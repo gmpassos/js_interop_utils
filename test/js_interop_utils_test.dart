@@ -5,6 +5,30 @@ import 'package:js_interop_utils/js_interop_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Object', () {
+    test('isJSAny', () {
+      expect(null.isJSAny, isFalse);
+
+      expect({}.isJSAny, isFalse);
+      expect(JSObject().isJSAny, isTrue);
+      expect({}.toJSDeep.isJSAny, isTrue);
+
+      // Ambiguous types:
+      expect(1.isJSAny, isNull);
+      expect(1.2.isJSAny, isNull);
+      expect("a".isJSAny, isNull);
+      expect(true.isJSAny, isNull);
+      expect([].isJSAny, isNull);
+
+      expect(JSArray().isJSAny, isNull);
+      expect([].toJSDeep.isJSAny, isNull);
+      expect(1.toJS.isJSAny, isNull);
+      expect(1.2.toJS.isJSAny, isNull);
+      expect("a".toJS.isJSAny, isNull);
+      expect(true.toJS.isJSAny, isNull);
+    });
+  });
+
   group('JSArray', () {
     test('Iterable<int>.toJS', () {
       expect(

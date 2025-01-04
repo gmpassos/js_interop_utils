@@ -10,6 +10,18 @@ override_platforms:
       arguments: -headless
 
 define_platforms:
+  chrome-dart2js:
+    name: Chrome (JS)
+    extends: chrome
+    compiler: dart2js
+    settings:
+      arguments: -headless
+  chrome-dart2wasm:
+    name: Chrome (Wasm)
+    extends: chrome
+    compiler: dart2wasm
+    settings:
+      arguments: -headless
   firefox-esr:
     name: Firefox-ESR
     extends: firefox
@@ -17,4 +29,4 @@ define_platforms:
       executable:
         linux: firefox-esr
 
-platforms: [chrome]
+platforms: [chrome-dart2js, chrome-dart2wasm]

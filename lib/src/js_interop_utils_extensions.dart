@@ -4,6 +4,58 @@ import 'dart:js_interop_unsafe';
 import 'js_interop_utils_helpers.dart';
 
 extension ObjectExtension on Object? {
+  /// Returns `true` if this instance is a [JSAny].
+  /// Returns `null` if it's an ambiguous Dart/JS type.
+  bool? get isJSAny {
+    final self = this;
+    if (self == null) return false;
+
+    // TODO: check a better way to identify a `JSAny` instance:
+
+    // Ambiguous types:
+    if (self is String) {
+      return null;
+    } else if (self is num) {
+      return null;
+    } else if (self is bool) {
+      return null;
+    } else if (self is List) {
+      return null;
+    }
+
+    // Exclusive Dart types:
+    if (self is Map) {
+      return false;
+    }
+
+    // ignore: invalid_runtime_check_with_js_interop_types
+    return self is JSAny;
+  }
+
+  /// Converts an [Object], which could be a [JSAny], to a Dart type in a graceful manner.
+  /// See [isJSAny].
+  Object? objectDartify() {
+    final self = this;
+    if (self == null) return null;
+
+    var isJSAny = self.isJSAny;
+
+    if (isJSAny != null) {
+      if (isJSAny) {
+        return (self as JSAny).dartify();
+      } else {
+        return self;
+      }
+    } else {
+      try {
+        var o = self as JSAny;
+        return o.dartify();
+      } catch (_) {
+        return self;
+      }
+    }
+  }
+
   JSAny? get toJSDeep {
     final self = this;
     if (self == null) {
