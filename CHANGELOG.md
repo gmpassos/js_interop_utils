@@ -1,3 +1,8 @@
+## 1.0.3
+
+- New `StringExtension`:
+  - Added `toDartFix`.
+
 ## 1.0.2
 
 - `JSObjectUtil`: fix `jsKeys` mapping name.

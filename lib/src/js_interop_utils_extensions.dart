@@ -112,6 +112,28 @@ extension ObjectExtension on Object? {
   }
 }
 
+extension StringExtension on String {
+  static final _emptyString = '';
+
+  /// When compiled to `Wasm` a `JSStringImpl` can leak to the `Wasm` VM
+  /// and it will crash, trying to cast to a `Wasm` String (`OneByteString`).
+  String get toDartFix {
+    final self = this;
+
+    if (self.isEmpty) {
+      return '';
+    }
+
+    if (self.runtimeType != String) {
+      // Force a Dart String.
+      var b = '$_emptyString$self';
+      return b;
+    }
+
+    return this;
+  }
+}
+
 extension MapExtension<K, V> on Map<K, V> {
   JSObject get toJSDeep {
     var obj = JSObject();
