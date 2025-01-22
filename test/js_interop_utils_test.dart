@@ -10,16 +10,12 @@ void main() {
       expect(null.isJSAny, isFalse, reason: "null");
       expect({}.isJSAny, isFalse, reason: "{}");
 
-      // Ambiguous types (all platforms):
-
-      expect(JSArray().isJSAny, isNull, reason: "JSArray()");
-      expect([].toJSDeep.isJSAny, isNull, reason: "[].toJSDeep");
-      expect(1.toJS.isJSAny, isNull, reason: "1.toJS");
-      expect(1.2.toJS.isJSAny, isNull, reason: "1.2.toJS");
-      expect("a".toJS.isJSAny, isNull, reason: "a.toJS");
-      expect(true.toJS.isJSAny, isNull, reason: "true.toJS");
-
       // Ambiguous types (some platforms):
+
+      expect(1.toJS.isJSAny, anyOf(isNull, isTrue), reason: "1.toJS");
+      expect(1.2.toJS.isJSAny, anyOf(isNull, isTrue), reason: "1.2.toJS");
+      expect("a".toJS.isJSAny, anyOf(isNull, isTrue), reason: "a.toJS");
+      expect(true.toJS.isJSAny, anyOf(isNull, isTrue), reason: "true.toJS");
 
       expect(1.isJSAny, anyOf(isNull, isFalse), reason: "1");
       expect(1.2.isJSAny, anyOf(isNull, isFalse), reason: "1.2");
@@ -27,8 +23,42 @@ void main() {
       expect(true.isJSAny, anyOf(isNull, isFalse), reason: "true");
       expect([].isJSAny, anyOf(isNull, isFalse), reason: "[]");
 
+      expect(JSArray().isJSAny, anyOf(isNull, isTrue), reason: "JSArray()");
+      expect([].toJSDeep.isJSAny, anyOf(isNull, isTrue), reason: "[].toJSDeep");
+
+      // JSAny types:
+
       expect(JSObject().isJSAny, anyOf(isNull, isTrue), reason: "JSObject()");
       expect({}.toJSDeep.isJSAny, anyOf(isNull, isTrue), reason: "{}.toJSDeep");
+    });
+
+    test('isJSObject', () {
+      expect(null.isJSObject, isFalse, reason: "null");
+      expect({}.isJSObject, isFalse, reason: "{}");
+
+      expect(1.toJS.isJSObject, isFalse, reason: "1.toJS");
+      expect(1.2.toJS.isJSObject, isFalse, reason: "1.2.toJS");
+      expect("a".toJS.isJSObject, isFalse, reason: "a.toJS");
+      expect(true.toJS.isJSObject, isFalse, reason: "true.toJS");
+
+      expect(1.isJSObject, anyOf(isNull, isFalse), reason: "1");
+      expect(1.2.isJSObject, anyOf(isNull, isFalse), reason: "1.2");
+      expect("a".isJSObject, anyOf(isNull, isFalse), reason: "a");
+      expect(true.isJSObject, anyOf(isNull, isFalse), reason: "true");
+
+      // Ambiguous types:
+
+      expect([].toJSDeep.isJSObject, anyOf(isNull, isTrue),
+          reason: "[].toJSDeep");
+      expect([].isJSObject, anyOf(isNull, isFalse), reason: "[]");
+      expect(JSArray().isJSObject, anyOf(isNull, isTrue), reason: "JSArray()");
+
+      // JSObject types:
+
+      expect(JSObject().isJSObject, anyOf(isNull, isTrue),
+          reason: "JSObject()");
+      expect({}.toJSDeep.isJSObject, anyOf(isNull, isTrue),
+          reason: "{}.toJSDeep");
     });
 
     test('objectDartify', () {

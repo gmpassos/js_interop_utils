@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Improve `isJSAny` and `isJSObject`.
+
 ## 1.0.3
 
 - New `StringExtension`:

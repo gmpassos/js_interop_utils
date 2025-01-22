@@ -12,34 +12,60 @@ extension ObjectExtension on Object? {
 
     // TODO: check a better way to identify a `JSAny` instance:
 
-    // Ambiguous platform identification:
-    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
-    if (self is JSArray && self is JSObject) {
-      return null;
-    }
-
     // Ambiguous types:
 
-    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
-    if (self is String && self is JSString) {
-      return null;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
-    else if (self is num && self is JSNumber) {
-      return null;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
-    else if (self is bool && self is JSBoolean) {
-      return null;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types, unnecessary_type_check
-    else if (self is List && self is JSArray) {
-      return null;
+    if (self is String) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSString) {
+        return null;
+      } else {
+        return false;
+      }
     }
 
-    // Exclusive Dart types:
+    if (self is num) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSNumber) {
+        return null;
+      } else {
+        return false;
+      }
+    }
+
+    if (self is bool) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSBoolean) {
+        return null;
+      } else {
+        return false;
+      }
+    }
+
+    if (self is Function) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSFunction) {
+        return null;
+      } else {
+        return false;
+      }
+    }
+
+    if (self is List) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSArray) {
+        return null;
+      } else {
+        return false;
+      }
+    }
+
     if (self is Map) {
-      return false;
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSArray || self is JSObject) {
+        return null;
+      } else {
+        return false;
+      }
     }
 
     // ignore: invalid_runtime_check_with_js_interop_types
@@ -62,6 +88,122 @@ extension ObjectExtension on Object? {
     } else {
       try {
         return self as JSAny;
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
+  /// Returns `true` if this instance is a [JSObject].
+  /// Returns `null` if it's an ambiguous Dart/JS type.
+  bool? get isJSObject {
+    final self = this;
+    if (self == null) return false;
+
+    if (self is String) {
+      return false;
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types
+    else if (self is JSString) {
+      if (self.isA<JSString>()) return false;
+    }
+
+    if (self is num) {
+      return false;
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types
+    else if (self is JSNumber) {
+      if (self.isA<JSNumber>()) return false;
+    }
+
+    if (self is bool) {
+      return false;
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types
+    else if (self is JSBoolean) {
+      if (self.isA<JSBoolean>()) return false;
+    }
+
+    if (self is List) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSArray) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if ((self as JSAny).isA<JSArray>()) {
+          return null;
+        }
+      }
+      // ignore: invalid_runtime_check_with_js_interop_types
+      else if (self is JSObject) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if ((self as JSAny).isA<JSObject>()) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    if (self is Map) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSArray) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if ((self as JSAny).isA<JSArray>()) {
+          return true;
+        }
+      }
+      // ignore: invalid_runtime_check_with_js_interop_types
+      else if (self is JSObject) {
+        // ignore: invalid_runtime_check_with_js_interop_types
+        if ((self as JSAny).isA<JSObject>()) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    if (self is Function) {
+      // ignore: invalid_runtime_check_with_js_interop_types
+      if (self is JSFunction) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    // ignore: invalid_runtime_check_with_js_interop_types
+    else if (self is JSFunction) {
+      return true;
+    }
+
+    // ignore: invalid_runtime_check_with_js_interop_types
+    if (self is JSArray) {
+      return true;
+    }
+
+    // ignore: invalid_runtime_check_with_js_interop_types
+    return self is JSObject;
+  }
+
+  /// Casts an [Object] to a [JSObject], in a graceful manner.
+  /// See [isJSObject].
+  JSObject? get asJSObject {
+    final self = this;
+    if (self == null) return null;
+
+    var isJSObject = self.isJSObject;
+    if (isJSObject != null) {
+      if (isJSObject) {
+        try {
+          return self as JSObject;
+        } catch (_) {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      try {
+        return self as JSObject;
       } catch (_) {
         return null;
       }
@@ -112,6 +254,14 @@ extension ObjectExtension on Object? {
   }
 }
 
+extension JSAnyNullableExtension on JSAny? {
+  String? get asString => this?.dartify()?.toString();
+}
+
+extension JSAnyExtension on JSAny {
+  String get asString => dartify()?.toString() ?? '';
+}
+
 extension StringExtension on String {
   static final _emptyString = '';
 
@@ -154,6 +304,8 @@ extension IterableJSAnyToJSArray<T extends JSAny?> on Iterable<T> {
 
 extension IterableExtension<T> on Iterable<T> {
   JSArray<JSAny?> get toJSDeep => map((e) => e.toJSDeep).toList().toJS;
+
+  Iterable<JSAny> whereJSAny() => map((e) => e.asJSAny).nonNulls;
 }
 
 extension IterableOfIterableExtension<E, T extends Iterable<E>> on Iterable<T> {
