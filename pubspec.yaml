@@ -1,6 +1,6 @@
 name: js_interop_utils
 description: A Dart library for seamless interaction with JavaScript using `dart:js_interop`, supporting deep transformations of objects, maps, and arrays.
-version: 1.0.4
+version: 1.0.5
 repository: https://github.com/gmpassos/js_interop_utils
 
 environment:
@@ -12,5 +12,5 @@ dependencies:
 
 dev_dependencies:
   lints: ^5.1.1
-  test: ^1.25.14
+  test: ^1.25.15
   dependency_validator: ^4.1.2

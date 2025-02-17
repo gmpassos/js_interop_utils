@@ -17,7 +17,7 @@ extension ObjectExtension on Object? {
     if (self is String) {
       // ignore: invalid_runtime_check_with_js_interop_types
       if (self is JSString) {
-        return null;
+        return true;
       } else {
         return false;
       }
@@ -26,7 +26,7 @@ extension ObjectExtension on Object? {
     if (self is num) {
       // ignore: invalid_runtime_check_with_js_interop_types
       if (self is JSNumber) {
-        return null;
+        return true;
       } else {
         return false;
       }
@@ -35,7 +35,7 @@ extension ObjectExtension on Object? {
     if (self is bool) {
       // ignore: invalid_runtime_check_with_js_interop_types
       if (self is JSBoolean) {
-        return null;
+        return true;
       } else {
         return false;
       }

@@ -1,3 +1,10 @@
+## 1.0.5
+
+- Improve `isJSAny` implementation for `bool`, `num` and `String`.
+- Improve `isJSAny` and `asJSAny` tests.
+
+- test: ^1.25.15
+
 ## 1.0.4
 
 - Improve `isJSAny` and `isJSObject`.

@@ -12,24 +12,63 @@ void main() {
 
       // Ambiguous types (some platforms):
 
-      expect(1.toJS.isJSAny, anyOf(isNull, isTrue), reason: "1.toJS");
-      expect(1.2.toJS.isJSAny, anyOf(isNull, isTrue), reason: "1.2.toJS");
-      expect("a".toJS.isJSAny, anyOf(isNull, isTrue), reason: "a.toJS");
-      expect(true.toJS.isJSAny, anyOf(isNull, isTrue), reason: "true.toJS");
+      expect(1.toJS.isJSAny, isTrue, reason: "1.toJS");
+      expect(1.2.toJS.isJSAny, isTrue, reason: "1.2.toJS");
+      expect("a".toJS.isJSAny, isTrue, reason: "a.toJS");
+      expect(true.toJS.isJSAny, isTrue, reason: "true.toJS");
 
-      expect(1.isJSAny, anyOf(isNull, isFalse), reason: "1");
-      expect(1.2.isJSAny, anyOf(isNull, isFalse), reason: "1.2");
-      expect("a".isJSAny, anyOf(isNull, isFalse), reason: "a");
-      expect(true.isJSAny, anyOf(isNull, isFalse), reason: "true");
-      expect([].isJSAny, anyOf(isNull, isFalse), reason: "[]");
+      expect(1.isJSAny, 1.isJSAny == true ? isTrue : isFalse, reason: "1");
+      expect(1.2.isJSAny, 1.2.isJSAny == true ? isTrue : isFalse,
+          reason: "1.2");
+      expect("a".isJSAny, "a".isJSAny == true ? isTrue : isFalse, reason: "a");
+      expect(true.isJSAny, true.isJSAny == true ? isTrue : isFalse,
+          reason: "true");
 
-      expect(JSArray().isJSAny, anyOf(isNull, isTrue), reason: "JSArray()");
-      expect([].toJSDeep.isJSAny, anyOf(isNull, isTrue), reason: "[].toJSDeep");
+      // `[].isJSAny`: dart2js: null ; dart2wasm: false
+      expect([].isJSAny, [].isJSAny != false ? anyOf(isTrue, isNull) : isFalse,
+          reason: "[]");
+
+      expect(JSArray().isJSAny,
+          JSArray().isJSAny != false ? anyOf(isTrue, isNull) : isFalse,
+          reason: "JSArray()");
+
+      expect([].toJSDeep.isJSAny,
+          [].toJSDeep.isJSAny != false ? anyOf(isTrue, isNull) : isFalse,
+          reason: "[].toJSDeep");
 
       // JSAny types:
 
-      expect(JSObject().isJSAny, anyOf(isNull, isTrue), reason: "JSObject()");
-      expect({}.toJSDeep.isJSAny, anyOf(isNull, isTrue), reason: "{}.toJSDeep");
+      expect(JSObject().isJSAny, isTrue, reason: "JSObject()");
+      expect({}.toJSDeep.isJSAny, isTrue, reason: "{}.toJSDeep");
+    });
+
+    test('asJSAny', () {
+      expect(null.asJSAny, isNull, reason: "null");
+      expect({}.asJSAny, isNull, reason: "{}");
+
+      // Ambiguous types (some platforms):
+
+      expect(1.toJS.asJSAny, isNotNull, reason: "1.toJS");
+      expect(1.2.toJS.asJSAny, isNotNull, reason: "1.2.toJS");
+      expect("a".toJS.asJSAny, isNotNull, reason: "a.toJS");
+      expect(true.toJS.asJSAny, isNotNull, reason: "true.toJS");
+
+      expect(1.asJSAny, 1.isJSAny == true ? isNotNull : isNull, reason: "1");
+      expect(1.2.asJSAny, 1.2.isJSAny == true ? isNotNull : isNull,
+          reason: "1.2");
+      expect("a".asJSAny, "a".isJSAny == true ? isNotNull : isNull,
+          reason: "a");
+      expect(true.asJSAny, true.isJSAny == true ? isNotNull : isNull,
+          reason: "true");
+
+      // `[].asJSAny`: dart2js: null ; dart2wasm: false
+      expect([].asJSAny, [].isJSAny != false ? isNotNull : isNull,
+          reason: "[]");
+
+      // JSAny types:
+
+      expect(JSObject().asJSAny, isNotNull, reason: "JSObject()");
+      expect({}.toJSDeep.asJSAny, isNotNull, reason: "{}.toJSDeep");
     });
 
     test('isJSObject', () {
