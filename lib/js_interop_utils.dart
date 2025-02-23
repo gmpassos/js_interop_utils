@@ -6,5 +6,6 @@ library;
 
 export 'dart:js_interop';
 
+export 'src/js_date.dart';
 export 'src/js_interop_utils_extensions.dart';
 export 'src/js_interop_utils_helpers.dart';
