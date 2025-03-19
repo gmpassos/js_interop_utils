@@ -1,3 +1,10 @@
+## 1.0.7
+
+- `JSArrayExtension`:
+  - `toIterable`, `toList`: avoid return of `<dynamic>` and avoid issues with `dynamic` values.
+
+- dependency_validator: ^4.1.3
+
 ## 1.0.6
 
 - New `JSDate`:

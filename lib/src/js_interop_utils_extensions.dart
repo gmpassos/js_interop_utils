@@ -479,9 +479,9 @@ extension JSArrayExtension on JSArray {
     }
   }
 
-  Iterable<dynamic> toIterable() => toDart.map((e) => e.dartify());
+  Iterable<Object?> toIterable() => toDart.map((e) => e.dartify());
 
-  List<dynamic> toList() => toIterable().toList();
+  List<Object?> toList() => toIterable().toList();
 
   Iterable<T> whereType<T>() => toIterable().whereType<T>();
 
