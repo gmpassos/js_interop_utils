@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+import 'dart:typed_data';
 
 import 'js_interop_utils_helpers.dart';
 
@@ -52,7 +53,7 @@ extension ObjectExtension on Object? {
 
     if (self is List) {
       // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSArray) {
+      if (self is JSArray || self is JSTypedArray) {
         return null;
       } else {
         return false;
@@ -314,6 +315,10 @@ extension IterableOfIterableExtension<E, T extends Iterable<E>> on Iterable<T> {
 
 extension IterableStringExtension<T> on Iterable<String> {
   JSArray<JSString> get toJS => map((e) => e.toJS).toList().toJS;
+}
+
+extension Uint8ListExtension on Uint8List {
+  JSUint8Array get toJS => Uint8ListToJSUint8Array(this).toJS;
 }
 
 extension IterableNumExtension<T> on Iterable<num> {

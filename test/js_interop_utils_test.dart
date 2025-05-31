@@ -1,6 +1,8 @@
 @TestOn('browser')
 library;
 
+import 'dart:typed_data';
+
 import 'package:js_interop_utils/js_interop_utils.dart';
 import 'package:test/test.dart';
 
@@ -157,6 +159,23 @@ void main() {
   });
 
   group('JSArray', () {
+    test('Uint8List.toJS', () {
+      var uint8list = Uint8List.fromList([1, 2]);
+      expect(uint8list.isJSAny, anyOf(isNull, isFalse));
+
+      var jsUint8Array = uint8list.toJS;
+
+      expect(jsUint8Array.isA<JSUint8Array>(), isTrue);
+      expect(jsUint8Array.isJSAny, anyOf(isNull, isTrue));
+
+      expect(
+        jsUint8Array.dartify(),
+        equals(
+          Uint8ListToJSUint8Array(Uint8List.fromList([1, 2])).toJS.dartify(),
+        ),
+      );
+    });
+
     test('Iterable<int>.toJS', () {
       expect(
         [

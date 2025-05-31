@@ -1,3 +1,10 @@
+## 1.0.8
+
+- Added `Uint8ListExtension` with `toJS` method for `JSUint8Array` conversion.
+- Updated `isJSAny` check to support `JSTypedArray`.
+ 
+- test: ^1.26.2
+
 ## 1.0.7
 
 - `JSArrayExtension`:
