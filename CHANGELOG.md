@@ -1,3 +1,11 @@
+## 1.0.9
+
+- `ObjectExtension`:
+  - `toJSDeep`:
+    - Optimize for `Function`: call `self.jsify()`.
+
+- test: ^1.26.3
+
 ## 1.0.8
 
 - Added `Uint8ListExtension` with `toJS` method for `JSUint8Array` conversion.

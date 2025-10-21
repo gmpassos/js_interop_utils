@@ -245,6 +245,8 @@ extension ObjectExtension on Object? {
       return self.toJS;
     } else if (self is bool) {
       return self.toJS;
+    } else if (self is Function) {
+      return self.jsify();
     } else if (self is Map) {
       return self.toJSDeep;
     } else if (self is Iterable) {
