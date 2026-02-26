@@ -1,3 +1,13 @@
+## 1.0.11
+
+- `lib/src/js_interop_utils_extensions.dart`:
+  - Added nullable iterable extensions for JS interop conversions:
+    - `IterableStringNullableExtension` with `toJS` returning `JSArray<JSString?>`.
+    - `IterableNumNullableExtension` with `toJS` returning `JSArray<JSNumber?>`.
+    - `IterableIntNullableExtension` with `toJS` returning `JSArray<JSNumber?>`.
+    - `IterableDoubleNullableExtension` with `toJS` returning `JSArray<JSNumber?>`.
+    - `IterableBoolNullableExtension` with `toJS` returning `JSArray<JSBoolean?>`.
+
 ## 1.0.10
 
 - `IterableExtension`, `IterableOfIterableExtension`, `IterableStringExtension`, `IterableNumExtension`,

@@ -319,6 +319,10 @@ extension IterableStringExtension<T> on Iterable<String> {
   JSArray<JSString> get toJS => map((e) => e.toJS).toJS;
 }
 
+extension IterableStringNullableExtension<T> on Iterable<String?> {
+  JSArray<JSString?> get toJS => map((e) => e?.toJS).toJS;
+}
+
 extension Uint8ListExtension on Uint8List {
   JSUint8Array get toJS => Uint8ListToJSUint8Array(this).toJS;
 }
@@ -327,16 +331,32 @@ extension IterableNumExtension<T> on Iterable<num> {
   JSArray<JSNumber> get toJS => map((e) => e.toJS).toJS;
 }
 
+extension IterableNumNullableExtension<T> on Iterable<num?> {
+  JSArray<JSNumber?> get toJS => map((e) => e?.toJS).toJS;
+}
+
 extension IterableIntExtension<T> on Iterable<int> {
   JSArray<JSNumber> get toJS => map((e) => e.toJS).toJS;
+}
+
+extension IterableIntNullableExtension<T> on Iterable<int?> {
+  JSArray<JSNumber?> get toJS => map((e) => e?.toJS).toJS;
 }
 
 extension IterableDoubleExtension<T> on Iterable<double> {
   JSArray<JSNumber> get toJS => map((e) => e.toJS).toJS;
 }
 
+extension IterableDoubleNullableExtension<T> on Iterable<double?> {
+  JSArray<JSNumber?> get toJS => map((e) => e?.toJS).toJS;
+}
+
 extension IterableBoolExtension<T> on Iterable<bool> {
   JSArray<JSBoolean> get toJS => map((e) => e.toJS).toJS;
+}
+
+extension IterableBoolNullableExtension<T> on Iterable<bool?> {
+  JSArray<JSBoolean?> get toJS => map((e) => e?.toJS).toJS;
 }
 
 extension JSObjectExtension on JSObject {
