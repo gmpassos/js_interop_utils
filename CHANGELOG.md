@@ -1,3 +1,9 @@
+## 1.0.10
+
+- `IterableExtension`, `IterableOfIterableExtension`, `IterableStringExtension`, `IterableNumExtension`,
+  `IterableIntExtension`, `IterableDoubleExtension`, `IterableBoolExtension`:
+  - `toJSDeep`: removed intermediate `.toList()` call before `.toJS`.
+
 ## 1.0.9
 
 - `ObjectExtension`:
