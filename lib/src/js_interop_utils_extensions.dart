@@ -73,6 +73,9 @@ extension ObjectExtension on Object? {
       return self.toJS;
     } else if (self is Function) {
       return self.jsify();
+    } else if (self is TypedData) {
+      // To a JS typed array (not an `Array`, as an `Iterable` would be):
+      return self.jsify();
     } else if (self is Map) {
       return self.toJSDeep;
     } else if (self is Iterable) {
@@ -155,8 +158,46 @@ extension IterableStringNullableExtension<T> on Iterable<String?> {
   JSArray<JSString?> get toJS => map((e) => e?.toJS).toJS;
 }
 
+// Typed lists are also `Iterable<int>`/`Iterable<double>`, and a package
+// extension takes precedence over a `dart:js_interop` one. Without these, the
+// `Iterable<int>`/`Iterable<double>` `toJS` below would shadow the SDK's and
+// convert a typed list into a JS `Array` instead of a JS typed array.
+
 extension Uint8ListExtension on Uint8List {
   JSUint8Array get toJS => Uint8ListToJSUint8Array(this).toJS;
+}
+
+extension Int8ListExtension on Int8List {
+  JSInt8Array get toJS => Int8ListToJSInt8Array(this).toJS;
+}
+
+extension Uint8ClampedListExtension on Uint8ClampedList {
+  JSUint8ClampedArray get toJS =>
+      Uint8ClampedListToJSUint8ClampedArray(this).toJS;
+}
+
+extension Int16ListExtension on Int16List {
+  JSInt16Array get toJS => Int16ListToJSInt16Array(this).toJS;
+}
+
+extension Uint16ListExtension on Uint16List {
+  JSUint16Array get toJS => Uint16ListToJSUint16Array(this).toJS;
+}
+
+extension Int32ListExtension on Int32List {
+  JSInt32Array get toJS => Int32ListToJSInt32Array(this).toJS;
+}
+
+extension Uint32ListExtension on Uint32List {
+  JSUint32Array get toJS => Uint32ListToJSUint32Array(this).toJS;
+}
+
+extension Float32ListExtension on Float32List {
+  JSFloat32Array get toJS => Float32ListToJSFloat32Array(this).toJS;
+}
+
+extension Float64ListExtension on Float64List {
+  JSFloat64Array get toJS => Float64ListToJSFloat64Array(this).toJS;
 }
 
 extension IterableNumExtension<T> on Iterable<num> {
@@ -233,8 +274,6 @@ extension JSObjectExtension on JSObject {
       return isA<JSFloat32Array>() ? this as T : null;
     } else if (T == JSFloat64Array) {
       return isA<JSFloat64Array>() ? this as T : null;
-    } else if (T == JSPromise) {
-      return isA<JSPromise>() ? this as T : null;
     } else if (T == JSDataView) {
       return isA<JSDataView>() ? this as T : null;
     } else if (T == JSFunction) {
@@ -367,8 +406,14 @@ extension JSArrayExtension on JSArray {
   List<String> toListOfString() =>
       toDart.map((e) => e.dartify()).whereType<String>().toList();
 
-  List<int> toListOfInt() =>
-      toDart.map((e) => e.dartify()).whereType<int>().toList();
+  /// The integer-valued numbers of this array.
+  /// (With `dart2wasm`, `dartify` returns JS numbers as [double]s.)
+  List<int> toListOfInt() => toDart
+      .map((e) => e.dartify())
+      .whereType<num>()
+      .where(_isIntegral)
+      .map((n) => n.toInt())
+      .toList();
 
   List<double> toListOfDouble() => toDart
       .map((e) => e.dartify())
@@ -380,7 +425,14 @@ extension JSArrayExtension on JSArray {
 extension JSIterableExtension on JSIterable {
   /// Iterates this [JSIterable], converting each element with `dartify`.
   /// See [JSIterableToIterable.toDartIterable].
-  Iterable<Object?> toIterable() => toDartIterable.map((e) => e.dartify());
+  Iterable<Object?> toIterable() {
+    // `toDartIterable` fails for a primitive JS string (`Reflect.get` called
+    // on non-object), so iterate its code points like JS does:
+    if (isA<JSString>()) {
+      return (this as JSString).toDart.runes.map(String.fromCharCode);
+    }
+    return toDartIterable.map((e) => e.dartify());
+  }
 
   List<Object?> toList() => toIterable().toList();
 }
@@ -398,12 +450,14 @@ extension JSArrayOfJSNumberExtension on JSArray<JSNumber> {
 
   List<double> toListDouble() => toDart.map((e) => e.toDartDouble).toList();
 
+  /// Integer-valued numbers are returned as [int], others as [double].
   List<num> toListNum() => toDart.map((e) {
     var d = e.toDartDouble;
-    var n = e.toDartInt;
-    return d == n ? n : d;
+    return _isIntegral(d) ? d.toInt() : d;
   }).toList();
 }
+
+bool _isIntegral(num n) => n.isFinite && n == n.truncateToDouble();
 
 extension JSArrayOfJSBigIntExtension on JSArray<JSBigInt> {
   List<BigInt> toList() => toDart.map((e) {
