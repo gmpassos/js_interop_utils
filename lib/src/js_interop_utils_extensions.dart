@@ -411,7 +411,8 @@ extension JSArrayExtension on JSArray {
   List<String> toListOfString() =>
       toDart.map((e) => e.dartify()).whereType<String>().toList();
 
-  /// The integer-valued numbers of this array.
+  /// The integer-valued numbers of this array, within the safe integer range
+  /// (`±(2^53 - 1)`); larger values are skipped rather than capped.
   /// (With `dart2wasm`, `dartify` returns JS numbers as [double]s.)
   List<int> toListOfInt() => toDart
       .map((e) => e.dartify())
@@ -455,14 +456,23 @@ extension JSArrayOfJSNumberExtension on JSArray<JSNumber> {
 
   List<double> toListDouble() => toDart.map((e) => e.toDartDouble).toList();
 
-  /// Integer-valued numbers are returned as [int], others as [double].
+  /// Integer-valued numbers within the safe integer range (`±(2^53 - 1)`) are
+  /// returned as [int], others as [double].
   List<num> toListNum() => toDart.map((e) {
     var d = e.toDartDouble;
     return _isIntegral(d) ? d.toInt() : d;
   }).toList();
 }
 
-bool _isIntegral(num n) => n.isFinite && n == n.truncateToDouble();
+/// The largest integer exactly representable on every platform (`2^53 - 1`,
+/// JS `Number.MAX_SAFE_INTEGER`).
+const _maxSafeInteger = 9007199254740991;
+
+/// Whether [n] is an integer that converts to [int] without loss on every
+/// platform. Larger values would be capped by `toInt()` on the VM/`dart2wasm`
+/// (e.g. `1e20.toInt()` is `9223372036854775807`).
+bool _isIntegral(num n) =>
+    n.isFinite && n == n.truncateToDouble() && n.abs() <= _maxSafeInteger;
 
 extension JSArrayOfJSBigIntExtension on JSArray<JSBigInt> {
   List<BigInt> toList() => toDart.map((e) {

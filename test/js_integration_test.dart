@@ -325,6 +325,19 @@ void main() {
       );
     });
 
+    // Regression: whole numbers beyond 2^53 were converted with `toInt()`,
+    // which caps them on the VM/dart2wasm (`1e20` -> 9223372036854775807).
+    test('large whole numbers are not capped', () {
+      final big = _eval('[1e20, -1e20, 9007199254740991, 5]') as JSArray;
+
+      expect(
+        (big as JSArray<JSNumber>).toListNum(),
+        equals([1e20, -1e20, 9007199254740991, 5]),
+      );
+      expect(big.toListNum()[2], isA<int>());
+      expect(big.toListOfInt(), equals([9007199254740991, 5]));
+    });
+
     test('JS BigInt array', () {
       final a = _eval('[1n, 2n, 12345678901234567890n]') as JSArray<JSBigInt>;
       expect(
