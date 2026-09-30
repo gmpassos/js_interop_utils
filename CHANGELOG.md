@@ -1,3 +1,38 @@
+## 1.1.0
+
+- sdk: ^3.13.0
+
+- `ObjectExtension`:
+  - `isJSAny`, `asJSAny`, `isJSObject`, `asJSObject`, `objectDartify`:
+    - Reimplemented with `Object?.isA<T>()` (Dart 3.12+), removing the `is JSxxx` checks and
+      `invalid_runtime_check_with_js_interop_types` ignores.
+    - Fix: a non-JS Dart object (e.g. an instance of a Dart class) is no longer reported as a `JSAny` with `dart2js`.
+    - `null` (ambiguous) is still returned for JS values that are also a Dart `List`/`Map`/`Function` (`dart2js`).
+  - Added `isJSFunction` and `isJSExportedDartFunction`.
+
+- `IterableExtension`:
+  - Added `toJSIterableDeep`: lazy `JSIterable` counterpart of `toJSDeep` (uses `Iterable.toJSIterable`, Dart 3.12+).
+
+- Added `JSIterableExtension` with `toIterable` and `toList`.
+
+- `JSObjectExtension`:
+  - Added `prototype` (`JSObject.getPrototypeOf`, Dart 3.13+) and `isPlainObject`.
+  - `as<T>()`:
+    - Fix: with `dart2wasm` all interop types are erased to one runtime type, so dispatching on `T` returned
+      `null` for valid casts (e.g. `JSObject().as<JSObject>()`). It now only casts when `T` can't be inspected.
+    - Fix: `as<JSObject>()` returned `null` with `dart2js`.
+    - Added `JSFunction` check; removed duplicated `JSInt8Array` branch.
+
+- `JSArrayExtension`:
+  - `push`: uses `JSArray.add`.
+  - Fix: `toListOfDouble` now returns `List<double>` (was a `List<int>` of only the integer elements).
+
+- `JSObjectUtil`: added `prototype` (`Object.prototype`).
+
+- lints: ^6.1.0
+- test: ^1.32.0
+- dependency_validator: ^5.1.0
+
 ## 1.0.11
 
 - `lib/src/js_interop_utils_extensions.dart`:

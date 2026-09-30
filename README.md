@@ -78,11 +78,30 @@ void main() {
 }
 ```
 
+### JS Iterables and Prototypes
+
+```dart
+import 'package:js_interop_utils/js_interop_utils.dart';
+
+void main() {
+  // Lazy JS iterable (elements converted with `toJSDeep` on iteration):
+  var jsIterable = [1, 'a', {'b': 2}].toJSIterableDeep;
+  print(jsIterable.toList()); // [1, 'a', {'b': 2}]
+
+  var jsObject = {'a': 1}.toJSDeep;
+  print(jsObject.isPlainObject); // true
+  print(JSDate().isPlainObject); // false
+  print(jsObject.prototype); // `Object.prototype`
+}
+```
+
 ## Extensions Overview
 
 ### Object Extensions
 
 - `toJSDeep`: Converts any Dart object to a deeply nested JavaScript object.
+- `isJSAny`, `isJSObject`, `isJSFunction`: Platform-independent JS type checks (based on `isA`).
+- `asJSAny`, `asJSObject`: Graceful casts, returning `null` if not a JS value/object.
 
 ### Map Extensions
 
@@ -92,12 +111,18 @@ void main() {
 
 - `toJS`: same as `toJS` for `List`.
 - `toJSDeep`: Converts a Dart `Iterable` to a deeply nested JavaScript array.
+- `toJSIterableDeep`: Converts a Dart `Iterable` to a lazy, deeply converted `JSIterable`.
+
+### JSIterable Extensions
+
+- `toIterable`, `toList`: Iterates a `JSIterable`, converting elements to Dart.
 
 ### JSObject Extensions
 
 - `keys`: Returns all keys of a JavaScript object.
 - `get`: Access a property by key.
 - `toMap`: Converts a JavaScript object to a Dart map.
+- `prototype`, `isPlainObject`: Inspect the object's JS prototype.
 
 ### JSArray Extensions
 

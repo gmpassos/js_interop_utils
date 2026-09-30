@@ -1,10 +1,19 @@
 @TestOn('browser')
 library;
 
+import 'dart:js_interop_unsafe';
 import 'dart:typed_data';
 
 import 'package:js_interop_utils/js_interop_utils.dart';
 import 'package:test/test.dart';
+
+@JS('Object.create')
+external JSObject _objectCreate(JSAny? proto);
+
+class _Foo {}
+
+/// `true` when JS interop types are erased to one runtime type (`dart2wasm`).
+final _interopTypesErased = JSObject == JSArray;
 
 void main() {
   group('Object', () {
@@ -254,6 +263,122 @@ void main() {
               .dartify(),
         ),
       );
+    });
+
+    test('prototype', () {
+      expect(JSObject().prototype, isNotNull);
+      expect(JSDate().prototype, isNotNull);
+      expect(_objectCreate(null).prototype, isNull);
+    });
+
+    test('isPlainObject', () {
+      expect(JSObject().isPlainObject, isTrue);
+      expect({'a': 1}.toJSDeep.isPlainObject, isTrue);
+      expect(_objectCreate(null).isPlainObject, isTrue);
+
+      expect(JSDate().isPlainObject, isFalse);
+      expect((JSArray() as JSObject).isPlainObject, isFalse);
+      expect(_objectCreate(JSObject()).isPlainObject, isFalse);
+    });
+
+    test('as<T>()', () {
+      expect(JSObject().as<JSObject>(), isNotNull);
+      expect((JSArray() as JSObject).as<JSArray>(), isNotNull);
+      expect(Uint8List(2).toJS.as<JSUint8Array>(), isNotNull);
+      expect((() {}).toJS.as<JSFunction>(), isNotNull);
+
+      // With `dart2wasm` the type argument can't be inspected at runtime:
+      final notA = _interopTypesErased ? isNotNull : isNull;
+      expect(JSObject().as<JSArray>(), notA);
+      expect(JSObject().as<JSFunction>(), notA);
+      expect(Uint8List(2).toJS.as<JSInt8Array>(), notA);
+    });
+  });
+
+  group('isA based checks', () {
+    test('non-JS Dart object', () {
+      final foo = _Foo();
+      expect(foo.isJSAny, isFalse);
+      expect(foo.asJSAny, isNull);
+      expect(foo.isJSObject, isFalse);
+      expect(foo.asJSObject, isNull);
+      expect(foo.objectDartify(), same(foo));
+    });
+
+    test('JS objects', () {
+      expect(JSDate().isJSAny, isTrue);
+      expect(JSDate().isJSObject, isTrue);
+
+      final noProto = _objectCreate(null);
+      expect(noProto.isJSAny, isTrue);
+      expect(noProto.isJSObject, isTrue);
+      expect(noProto.asJSObject, isNotNull);
+    });
+
+    test('isJSFunction / isJSExportedDartFunction', () {
+      final exported = (() {}).toJS;
+      final parseInt = globalContext['parseInt'];
+
+      expect(exported.isJSFunction, isTrue);
+      expect(exported.isJSExportedDartFunction, isTrue);
+
+      expect(parseInt.isJSFunction, isTrue);
+      expect(parseInt.isJSExportedDartFunction, isFalse);
+
+      expect((() {}).isJSFunction, isFalse);
+      expect(JSObject().isJSFunction, isFalse);
+      expect(null.isJSFunction, isFalse);
+    });
+  });
+
+  group('JSIterable', () {
+    test('Iterable.toJSIterableDeep', () {
+      expect(
+        [
+          1,
+          'a',
+          [true],
+          {'b': 2},
+        ].toJSIterableDeep.toList(),
+        equals([
+          1,
+          'a',
+          [true],
+          {'b': 2},
+        ]),
+      );
+    });
+
+    test('Iterable.toJSIterableDeep is lazy', () {
+      var count = 0;
+      final iterable = [1, 2, 3].map((e) {
+        count++;
+        return e;
+      }).toJSIterableDeep;
+
+      expect(count, equals(0));
+      expect(iterable.toList(), equals([1, 2, 3]));
+      expect(count, equals(3));
+    });
+
+    test('JSArray as JSIterable', () {
+      final JSIterable iterable = ['a', 'b'].toJSDeep;
+      expect(iterable.toIterable(), equals(['a', 'b']));
+    });
+  });
+
+  group('JSArrayExtension', () {
+    test('push', () {
+      final a = JSArray();
+      expect(a.push(1), equals(1));
+      expect(a.push('b'), equals(2));
+      expect(a.toList(), equals([1, 'b']));
+    });
+
+    test('toListOfDouble', () {
+      final l = [1, 2.5, 'x'].toJSDeep.toListOfDouble();
+      expect(l, isA<List<double>>());
+      expect(l, equals([1.0, 2.5]));
     });
   });
 }

@@ -6,233 +6,59 @@ import 'js_interop_utils_helpers.dart';
 
 extension ObjectExtension on Object? {
   /// Returns `true` if this instance is a [JSAny].
-  /// Returns `null` if it's an ambiguous Dart/JS type.
+  /// Returns `null` if it's an ambiguous Dart/JS type: a JS value that is also
+  /// a Dart [List], [Map] or [Function] (for example, when compiled with
+  /// `dart2js`, a Dart [List] is a JS `Array`).
   bool? get isJSAny {
     final self = this;
-    if (self == null) return false;
+    if (!self.isA<JSAny>()) return false;
 
-    // TODO: check a better way to identify a `JSAny` instance:
+    if (self is List || self is Map || self is Function) return null;
 
-    // Ambiguous types:
-
-    if (self is String) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSString) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    if (self is num) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSNumber) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    if (self is bool) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSBoolean) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    if (self is Function) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSFunction) {
-        return null;
-      } else {
-        return false;
-      }
-    }
-
-    if (self is List) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSArray || self is JSTypedArray) {
-        return null;
-      } else {
-        return false;
-      }
-    }
-
-    if (self is Map) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSArray || self is JSObject) {
-        return null;
-      } else {
-        return false;
-      }
-    }
-
-    // ignore: invalid_runtime_check_with_js_interop_types
-    return self is JSAny;
+    return true;
   }
 
   /// Casts an [Object] to a [JSAny], in a graceful manner.
+  /// Returns `null` if this instance is not a JS value.
   /// See [isJSAny].
   JSAny? get asJSAny {
     final self = this;
-    if (self == null) return null;
-
-    var isJSAny = self.isJSAny;
-    if (isJSAny != null) {
-      if (isJSAny) {
-        return self as JSAny;
-      } else {
-        return null;
-      }
-    } else {
-      try {
-        return self as JSAny;
-      } catch (_) {
-        return null;
-      }
-    }
+    return self.isA<JSAny>() ? self as JSAny : null;
   }
 
   /// Returns `true` if this instance is a [JSObject].
-  /// Returns `null` if it's an ambiguous Dart/JS type.
+  /// Returns `null` if it's an ambiguous Dart/JS type: a JS `Array` that is
+  /// also a Dart [List] (when compiled with `dart2js`).
   bool? get isJSObject {
     final self = this;
-    if (self == null) return false;
+    if (!self.isA<JSObject>()) return false;
 
-    if (self is String) {
-      return false;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types
-    else if (self is JSString) {
-      if (self.isA<JSString>()) return false;
-    }
+    if (self is List && self.isA<JSArray>()) return null;
 
-    if (self is num) {
-      return false;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types
-    else if (self is JSNumber) {
-      if (self.isA<JSNumber>()) return false;
-    }
-
-    if (self is bool) {
-      return false;
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types
-    else if (self is JSBoolean) {
-      if (self.isA<JSBoolean>()) return false;
-    }
-
-    if (self is List) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSArray) {
-        // ignore: invalid_runtime_check_with_js_interop_types
-        if ((self as JSAny).isA<JSArray>()) {
-          return null;
-        }
-      }
-      // ignore: invalid_runtime_check_with_js_interop_types
-      else if (self is JSObject) {
-        // ignore: invalid_runtime_check_with_js_interop_types
-        if ((self as JSAny).isA<JSObject>()) {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    }
-
-    if (self is Map) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSArray) {
-        // ignore: invalid_runtime_check_with_js_interop_types
-        if ((self as JSAny).isA<JSArray>()) {
-          return true;
-        }
-      }
-      // ignore: invalid_runtime_check_with_js_interop_types
-      else if (self is JSObject) {
-        // ignore: invalid_runtime_check_with_js_interop_types
-        if ((self as JSAny).isA<JSObject>()) {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    }
-
-    if (self is Function) {
-      // ignore: invalid_runtime_check_with_js_interop_types
-      if (self is JSFunction) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    // ignore: invalid_runtime_check_with_js_interop_types
-    else if (self is JSFunction) {
-      return true;
-    }
-
-    // ignore: invalid_runtime_check_with_js_interop_types
-    if (self is JSArray) {
-      return true;
-    }
-
-    // ignore: invalid_runtime_check_with_js_interop_types
-    return self is JSObject;
+    return true;
   }
 
   /// Casts an [Object] to a [JSObject], in a graceful manner.
+  /// Returns `null` if this instance is not a JS object.
   /// See [isJSObject].
   JSObject? get asJSObject {
     final self = this;
-    if (self == null) return null;
-
-    var isJSObject = self.isJSObject;
-    if (isJSObject != null) {
-      if (isJSObject) {
-        try {
-          return self as JSObject;
-        } catch (_) {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    } else {
-      try {
-        return self as JSObject;
-      } catch (_) {
-        return null;
-      }
-    }
+    return self.isA<JSObject>() ? self as JSObject : null;
   }
+
+  /// Returns `true` if this instance is a JS `Function`,
+  /// including a Dart function exported with `Function.toJS`.
+  bool get isJSFunction => isA<JSFunction>();
+
+  /// Returns `true` if this instance is a Dart function exported to JS
+  /// with `Function.toJS` or `Function.toJSCaptureThis`.
+  bool get isJSExportedDartFunction => isA<JSExportedDartFunction>();
 
   /// Converts an [Object], which could be a [JSAny], to a Dart type in a graceful manner.
   /// See [isJSAny].
   Object? objectDartify() {
     final self = this;
-    if (self == null) return null;
-
-    var isJSAny = self.isJSAny;
-
-    if (isJSAny != null) {
-      if (isJSAny) {
-        return (self as JSAny).dartify();
-      } else {
-        return self;
-      }
-    } else {
-      try {
-        var o = self as JSAny;
-        return o.dartify();
-      } catch (_) {
-        return self;
-      }
-    }
+    return self.isA<JSAny>() ? (self as JSAny).dartify() : self;
   }
 
   JSAny? get toJSDeep {
@@ -308,6 +134,12 @@ extension IterableJSAnyToJSArray<T extends JSAny?> on Iterable<T> {
 extension IterableExtension<T> on Iterable<T> {
   JSArray<JSAny?> get toJSDeep => map((e) => e.toJSDeep).toJS;
 
+  /// A lazy [JSIterable] over this [Iterable], converting each element
+  /// with [ObjectExtension.toJSDeep] as it's iterated.
+  /// See [IterableToJSIterable.toJSIterable].
+  JSIterable<JSAny?> get toJSIterableDeep =>
+      map((e) => e.toJSDeep).toJSIterable;
+
   Iterable<JSAny> whereJSAny() => map((e) => e.asJSAny).nonNulls;
 }
 
@@ -360,17 +192,29 @@ extension IterableBoolNullableExtension<T> on Iterable<bool?> {
 }
 
 extension JSObjectExtension on JSObject {
+  /// Whether JS interop types are erased to the same runtime type, which is
+  /// the case with `dart2wasm` (e.g. `JSObject == JSArray`). When erased, [T]
+  /// can't be inspected at runtime by [as].
+  static final bool _interopTypesErased = JSObject == JSArray;
+
+  /// Casts this [JSObject] to [T], returning `null` if it isn't a [T].
+  ///
+  /// The JS type of [T] is only checked when it can be told apart at runtime.
+  /// With `dart2wasm` no interop type can, and with `dart2js` types erased to
+  /// the same runtime type as [JSObject] (e.g. [JSPromise]) can't, so in
+  /// those cases this only casts. Prefer `isA<T>()` with a concrete type
+  /// argument when the check matters.
   T? as<T extends JSObject>() {
     if (isUndefinedOrNull) return null;
 
-    if (T == JSArray) {
+    if (_interopTypesErased || T == JSObject) {
+      return this as T;
+    } else if (T == JSArray) {
       return isA<JSArray>() ? this as T : null;
     } else if (T == JSArrayBuffer) {
       return isA<JSArrayBuffer>() ? this as T : null;
     } else if (T == JSTypedArray) {
       return isA<JSTypedArray>() ? this as T : null;
-    } else if (T == JSInt8Array) {
-      return isA<JSInt8Array>() ? this as T : null;
     } else if (T == JSInt8Array) {
       return isA<JSInt8Array>() ? this as T : null;
     } else if (T == JSUint8Array) {
@@ -393,6 +237,8 @@ extension JSObjectExtension on JSObject {
       return isA<JSPromise>() ? this as T : null;
     } else if (T == JSDataView) {
       return isA<JSDataView>() ? this as T : null;
+    } else if (T == JSFunction) {
+      return isA<JSFunction>() ? this as T : null;
     } else {
       try {
         return this as T;
@@ -413,10 +259,25 @@ extension JSObjectExtension on JSObject {
 
   void put(Object key, Object? value) =>
       setProperty(key.toJSDeep!, value.toJSDeep);
+
+  /// The JS prototype of this object, or `null` if it has none
+  /// (e.g. an object created with `Object.create(null)`).
+  /// See [JSObject.getPrototypeOf].
+  JSObject? get prototype => JSObject.getPrototypeOf(this);
+
+  /// Returns `true` if this is a plain JS object (a dictionary-like object
+  /// such as `{}`), whose prototype is `Object.prototype` or `null`.
+  bool get isPlainObject {
+    final proto = prototype;
+    return proto == null || proto.strictEquals(JSObjectUtil.prototype).toDart;
+  }
 }
 
 extension JSArrayExtension on JSArray {
-  int push(Object? any) => JSArrayUtil(this).push(any?.toJSDeep);
+  int push(Object? any) {
+    add(any?.toJSDeep);
+    return length;
+  }
 
   int pushVarArgs(
     Object? any, [
@@ -509,8 +370,19 @@ extension JSArrayExtension on JSArray {
   List<int> toListOfInt() =>
       toDart.map((e) => e.dartify()).whereType<int>().toList();
 
-  List<int> toListOfDouble() =>
-      toDart.map((e) => e.dartify()).whereType<int>().toList();
+  List<double> toListOfDouble() => toDart
+      .map((e) => e.dartify())
+      .whereType<num>()
+      .map((n) => n.toDouble())
+      .toList();
+}
+
+extension JSIterableExtension on JSIterable {
+  /// Iterates this [JSIterable], converting each element with `dartify`.
+  /// See [JSIterableToIterable.toDartIterable].
+  Iterable<Object?> toIterable() => toDartIterable.map((e) => e.dartify());
+
+  List<Object?> toList() => toIterable().toList();
 }
 
 extension JSArrayOfJSStringExtension on JSArray<JSString> {
