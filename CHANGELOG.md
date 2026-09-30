@@ -1,3 +1,10 @@
+## 1.1.1
+
+- `JSArrayOfJSNumberExtension.toListNum` / `JSArrayExtension.toListOfInt`:
+  - Fix: whole numbers beyond the safe integer range (`±(2^53 - 1)`) were converted with `toInt()`, which caps them
+    on the VM/`dart2wasm` (e.g. `1e20` became `9223372036854775807`). `toListNum` now keeps them as `double`, and
+    `toListOfInt` skips them.
+
 ## 1.1.0
 
 - sdk: ^3.13.0
