@@ -9,6 +9,9 @@ extension type JSObjectUtil._(JSObject _jsObject) implements JSAny {
 
   static Iterable<String> keys(JSObject object) =>
       jsKeys(object).whereType<String>();
+
+  /// `Object.prototype`.
+  external static JSObject get prototype;
 }
 
 @JS('Array')

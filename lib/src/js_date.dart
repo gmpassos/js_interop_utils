@@ -9,13 +9,15 @@ extension type JSDate._(JSObject _) implements JSObject {
   external static int now();
 
   // ignore: non_constant_identifier_names
-  external static int UTC(int year,
-      [int monthIndex,
-      int day,
-      int hours,
-      int minutes,
-      int seconds,
-      int milliseconds]);
+  external static int UTC(
+    int year, [
+    int monthIndex,
+    int day,
+    int hours,
+    int minutes,
+    int seconds,
+    int milliseconds,
+  ]);
 
   external int getTime();
 

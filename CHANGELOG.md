@@ -1,3 +1,57 @@
+## 1.1.0
+
+- sdk: ^3.13.0
+
+- `ObjectExtension`:
+  - `isJSAny`, `asJSAny`, `isJSObject`, `asJSObject`, `objectDartify`:
+    - Reimplemented with `Object?.isA<T>()` (Dart 3.12+), removing the `is JSxxx` checks and
+      `invalid_runtime_check_with_js_interop_types` ignores.
+    - Fix: a non-JS Dart object (e.g. an instance of a Dart class) is no longer reported as a `JSAny` with `dart2js`.
+    - `null` (ambiguous) is still returned for JS values that are also a Dart `List`/`Map`/`Function` (`dart2js`).
+  - Added `isJSFunction` and `isJSExportedDartFunction`.
+  - `toJSDeep`: Fix: `TypedData` (e.g. a `Uint8List` inside a `Map`) is converted to a JS typed array,
+    not to a JS `Array`.
+
+- Fix: `Int8List`, `Uint8ClampedList`, `Int16List`, `Uint16List`, `Int32List`, `Uint32List`, `Float32List` and
+  `Float64List` `.toJS` returned a JS `Array`: the package `Iterable<int>`/`Iterable<double>` `toJS` extensions
+  shadowed the `dart:js_interop` ones. Added `Int8ListExtension`, `Uint8ClampedListExtension`,
+  `Int16ListExtension`, `Uint16ListExtension`, `Int32ListExtension`, `Uint32ListExtension`,
+  `Float32ListExtension` and `Float64ListExtension` (as `Uint8ListExtension` already did for `Uint8List`).
+
+- `IterableExtension`:
+  - Added `toJSIterableDeep`: lazy `JSIterable` counterpart of `toJSDeep` (uses `Iterable.toJSIterable`, Dart 3.12+).
+
+- Added `JSIterableExtension` with `toIterable` and `toList`.
+  - Works around `JSIterable.toDartIterable` failing for a JS string (`Reflect.get called on non-object`).
+
+- `JSObjectExtension`:
+  - Added `prototype` (`JSObject.getPrototypeOf`, Dart 3.13+) and `isPlainObject`.
+  - `as<T>()`:
+    - Fix: with `dart2wasm` all interop types are erased to one runtime type, so dispatching on `T` returned
+      `null` for valid casts (e.g. `JSObject().as<JSObject>()`). It now only casts when `T` can't be inspected.
+    - Fix: `as<JSObject>()` returned `null` with `dart2js`.
+    - Added `JSFunction` check; removed duplicated `JSInt8Array` branch and unreachable `JSPromise` branch.
+
+- `JSArrayExtension`:
+  - `push`: uses `JSArray.add`.
+  - Fix: `toListOfDouble` now returns `List<double>` (was a `List<int>` of only the integer elements).
+  - Fix: `toListOfInt` returned an empty list with `dart2wasm` (JS numbers are dartified as `double`).
+    It now returns the integer-valued numbers on all platforms.
+
+- `JSArrayOfJSNumberExtension`:
+  - Fix: `toListNum` threw for non-integer numbers (e.g. `2.5`) with `dart2js`.
+
+- Tests:
+  - Added integration tests (`test/js_integration_test.dart`) exchanging values with real JS code
+    (JSON, iteration protocols, `Set`/`Map`/generators, callbacks, `BigInt`, `Date`, typed arrays, prototypes).
+  - Added unit tests for the whole public API (`test/js_interop_utils_api_test.dart`).
+
+- `JSObjectUtil`: added `prototype` (`Object.prototype`).
+
+- lints: ^6.1.0
+- test: ^1.32.0
+- dependency_validator: ^5.1.0
+
 ## 1.0.11
 
 - `lib/src/js_interop_utils_extensions.dart`:

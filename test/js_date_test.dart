@@ -35,8 +35,15 @@ void main() {
 
     test('JSDate.UTC()', () {
       var now = DateTime.now().toUtc();
-      var dateTimeUTC = JSDate.UTC(now.year, now.month - 1, now.day, now.hour,
-          now.minute, now.second, now.millisecond);
+      var dateTimeUTC = JSDate.UTC(
+        now.year,
+        now.month - 1,
+        now.day,
+        now.hour,
+        now.minute,
+        now.second,
+        now.millisecond,
+      );
 
       expect(dateTimeUTC, equals(now.millisecondsSinceEpoch));
     });
