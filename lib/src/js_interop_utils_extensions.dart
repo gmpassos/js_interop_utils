@@ -11,6 +11,7 @@ extension ObjectExtension on Object? {
   /// `dart2js`, a Dart [List] is a JS `Array`).
   bool? get isJSAny {
     final self = this;
+    if (self == null) return false;
     if (!self.isA<JSAny>()) return false;
 
     if (self is List || self is Map || self is Function) return null;
@@ -23,6 +24,7 @@ extension ObjectExtension on Object? {
   /// See [isJSAny].
   JSAny? get asJSAny {
     final self = this;
+    if (self == null) return null;
     return self.isA<JSAny>() ? self as JSAny : null;
   }
 
@@ -31,6 +33,7 @@ extension ObjectExtension on Object? {
   /// also a Dart [List] (when compiled with `dart2js`).
   bool? get isJSObject {
     final self = this;
+    if (self == null) return false;
     if (!self.isA<JSObject>()) return false;
 
     if (self is List && self.isA<JSArray>()) return null;
@@ -43,6 +46,7 @@ extension ObjectExtension on Object? {
   /// See [isJSObject].
   JSObject? get asJSObject {
     final self = this;
+    if (self == null) return null;
     return self.isA<JSObject>() ? self as JSObject : null;
   }
 
@@ -58,6 +62,7 @@ extension ObjectExtension on Object? {
   /// See [isJSAny].
   Object? objectDartify() {
     final self = this;
+    if (self == null) return null;
     return self.isA<JSAny>() ? (self as JSAny).dartify() : self;
   }
 
