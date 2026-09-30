@@ -9,14 +9,11 @@ void main() {
 
   var jsArrayOfPairs = [
     ['a', 1],
-    ['b', 2]
+    ['b', 2],
   ].toJSDeep; // JSArray<JSArray<JSAny?>>
   print('JSArray<JSArray<JSAny?>>: $jsArrayOfPairs');
 
-  var jsObject = {
-    'a': 1,
-    'b': 2,
-  }.toJSDeep;
+  var jsObject = {'a': 1, 'b': 2}.toJSDeep;
   print('JSObject: $jsObject');
 
   var jsObject2 = {

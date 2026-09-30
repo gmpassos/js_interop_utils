@@ -489,20 +489,11 @@ extension JSArrayExtension on JSArray {
         any4.toJSDeep,
       );
     } else if (any3 != null) {
-      return a.push(
-        any?.toJSDeep,
-        any2?.toJSDeep,
-        any3.toJSDeep,
-      );
+      return a.push(any?.toJSDeep, any2?.toJSDeep, any3.toJSDeep);
     } else if (any2 != null) {
-      return a.push(
-        any?.toJSDeep,
-        any2.toJSDeep,
-      );
+      return a.push(any?.toJSDeep, any2.toJSDeep);
     } else {
-      return a.push(
-        any?.toJSDeep,
-      );
+      return a.push(any?.toJSDeep);
     }
   }
 
@@ -536,16 +527,16 @@ extension JSArrayOfJSNumberExtension on JSArray<JSNumber> {
   List<double> toListDouble() => toDart.map((e) => e.toDartDouble).toList();
 
   List<num> toListNum() => toDart.map((e) {
-        var d = e.toDartDouble;
-        var n = e.toDartInt;
-        return d == n ? n : d;
-      }).toList();
+    var d = e.toDartDouble;
+    var n = e.toDartInt;
+    return d == n ? n : d;
+  }).toList();
 }
 
 extension JSArrayOfJSBigIntExtension on JSArray<JSBigInt> {
   List<BigInt> toList() => toDart.map((e) {
-        var o = e.dartify();
-        if (o is BigInt) return o;
-        return BigInt.parse(o.toString());
-      }).toList();
+    var o = e.dartify();
+    if (o is BigInt) return o;
+    return BigInt.parse(o.toString());
+  }).toList();
 }
